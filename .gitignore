@@ -1,0 +1,4 @@
+### Ansible ###
+*.retry
+hosts.stage
+hosts.prod

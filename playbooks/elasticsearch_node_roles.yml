@@ -1,0 +1,15 @@
+---
+- hosts: all
+  remote_user: centos
+  connection: ssh
+  tasks:
+    - name: get elasticsearch role from datadog.conf
+      command: "grep 'es_[a-z]*_node' /etc/dd-agent/datadog.conf | sed 's/tags: //'"
+      changed_when: False
+      become: true
+      become_user: root
+      register: role
+
+    - name: print hostname + role
+      debug:
+        msg: "Hostname: {{ansible_hostname}}, Role: {{role.stdout}}"

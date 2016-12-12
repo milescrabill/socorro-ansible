@@ -1,0 +1,11 @@
+---
+- hosts: localhost
+  connection: local
+  tasks:
+    - name: delete_after_2_years
+      s3_lifecycle:
+        name: org.mozilla.crash-stats.symbols-public
+        expiration_days: 730
+        prefix: /v1/
+        status: enabled
+        state: present

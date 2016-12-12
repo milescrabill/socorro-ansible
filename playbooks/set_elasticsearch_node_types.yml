@@ -1,0 +1,52 @@
+---
+- hosts: all
+  remote_user: centos
+  connection: ssh
+  tasks:
+    - name: check if data node
+      command: 'grep "data: true$" /etc/elasticsearch/elasticsearch.yml'
+      ignore_errors: True
+      changed_when: False
+      register: is_data_node
+    - name: check if master node
+      command: 'grep "master: true$" /etc/elasticsearch/elasticsearch.yml'
+      ignore_errors: True
+      changed_when: False
+      register: is_master_node
+    - name: substitute datadog default tags for data node tag
+      replace:
+        dest: /etc/dd-agent/datadog.conf
+        regexp: "^#tags: mytag0, mytag1$"
+        replace: "tags: es_data_node"
+      become: true
+      become_user: root
+      when: is_data_node|succeeded and is_master_node|failed
+      register: changed_to_data
+    - name: substitute datadog default tags for master node tag
+      replace:
+        dest: /etc/dd-agent/datadog.conf
+        regexp: "^#tags: mytag0, mytag1$"
+        replace: "tags: es_master_node"
+      become: true
+      become_user: root
+      when: is_data_node|failed and is_master_node|succeeded
+      register: changed_to_master
+    - name: substitute datadog default tags for interface node tag
+      replace:
+        dest: /etc/dd-agent/datadog.conf
+        regexp: "^#tags: mytag0, mytag1$"
+        replace: "tags: es_interface_node"
+      become: true
+      become_user: root
+      when: is_data_node|failed and is_master_node|failed
+      register: changed_to_interface
+    - name: restart datadog
+      service:
+        name: datadog-agent
+        state: restarted
+      become: true
+      become_user: root
+      when: >
+        changed_to_data.changed == true or
+        changed_to_master == true or
+        changed_to_interface == true
