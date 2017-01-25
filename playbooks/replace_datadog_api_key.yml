@@ -12,13 +12,13 @@
         replace: "api_key: {{new_datadog_api_key}}"
       become: true
       become_user: root
-    - name: create /etc/dd-agent/conf.d/elastic.yaml if it does not exist
-      copy:
-        src: /etc/dd-agent/conf.d/elastic.yaml.example
-        dest: /etc/dd-agent/conf.d/elastic.yaml
-        remote_src: True
-      become: true
-      become_user: root
+    # - name: create /etc/dd-agent/conf.d/elastic.yaml if it does not exist
+    #   copy:
+    #     src: /etc/dd-agent/conf.d/elastic.yaml.example
+    #     dest: /etc/dd-agent/conf.d/elastic.yaml
+    #     remote_src: True
+    #   become: true
+    #   become_user: root
     - name: restart datadog
       service:
         name: datadog-agent
