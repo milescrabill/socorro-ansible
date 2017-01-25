@@ -2,7 +2,23 @@
 - hosts: all
   remote_user: centos
   connection: ssh
+  vars:
+    new_datadog_api_key: null
   tasks:
+    - name: substitute old datadog API key for new key
+      replace:
+        dest: /etc/dd-agent/datadog.conf
+        regexp: "^api_key: [a-zA-Z0-9]*$"
+        replace: "api_key: {{new_datadog_api_key}}"
+      become: true
+      become_user: root
+    - name: create /etc/dd-agent/conf.d/elastic.yaml if it does not exist
+      copy:
+        src: /etc/dd-agent/conf.d/elastic.yaml.example
+        dest: /etc/dd-agent/conf.d/elastic.yaml
+        remote_src: True
+      become: true
+      become_user: root
     - name: check if data node
       command: 'grep "data: true$" /etc/elasticsearch/elasticsearch.yml'
       ignore_errors: True
@@ -48,5 +64,5 @@
       become_user: root
       when: >
         changed_to_data.changed == true or
-        changed_to_master == true or
-        changed_to_interface == true
+        changed_to_master.changed == true or
+        changed_to_interface.changed == true

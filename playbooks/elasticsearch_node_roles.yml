@@ -4,7 +4,7 @@
   connection: ssh
   tasks:
     - name: get elasticsearch role from datadog.conf
-      command: "grep 'es_[a-z]*_node' /etc/dd-agent/datadog.conf | sed 's/tags: //'"
+      command: "grep 'es_[a-z]*_node' /etc/dd-agent/datadog.conf"
       changed_when: False
       become: true
       become_user: root
@@ -12,4 +12,4 @@
 
     - name: print hostname + role
       debug:
-        msg: "Hostname: {{ansible_hostname}}, Role: {{role.stdout}}"
+        msg: "Hostname: {{ansible_hostname}}, Role: {{role.stdout|replace('tags: ', '')}}"

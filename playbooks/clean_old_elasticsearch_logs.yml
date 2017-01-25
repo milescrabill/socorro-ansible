@@ -1,0 +1,14 @@
+---
+- hosts: all
+  remote_user: centos
+  connection: ssh
+  tasks:
+    - name: are there logs from 2015?
+      shell: "find /var/log/elasticsearch/*2015*"
+      changed_when: False
+      register: exist
+    - name: remove logs from 2015
+      shell: "rm -rf /var/log/elasticsearch/sss_prod.log.2015*"
+      become: true
+      become_user: root
+      when: exist.rc == 0
