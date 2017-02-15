@@ -5,6 +5,7 @@
   connection: ssh
   vars:
     new_datadog_api_key: null
+    es_heap_size: 14g # stage data node
   vars_prompt:
     - name: "shard_allocation_disabled"
       prompt: "Have you disabled shard allocation? (yes to advance, be honest!)"
@@ -15,11 +16,11 @@
         msg: "Disable shard allocation!"
       run_once: true
       when: shard_allocation_disabled != "yes"
-    - name: (data node) set ES_HEAP_SIZE in /etc/sysconfig
+    - name: set ES_HEAP_SIZE in /etc/sysconfig
       replace:
         dest: /etc/sysconfig/elasticsearch
-        regexp: "^#ES_HEAP_SIZE=2g"
-        replace: "ES_HEAP_SIZE=14g"
+        regexp: "^#?ES_HEAP_SIZE=.*"
+        replace: "ES_HEAP_SIZE={{es_heap_size}}"
       become: true
       become_user: root
       register: set_es_heap_size
