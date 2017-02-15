@@ -1,0 +1,20 @@
+---
+- hosts: all
+  remote_user: centos
+  connection: ssh
+  tasks:
+    - name: get elasticsearch role from datadog.conf
+      command: "grep 'es_[a-z]*_node' /etc/dd-agent/datadog.conf"
+      changed_when: False
+      become: true
+      become_user: root
+      register: role
+
+    - name: what is the heap size?
+      shell: "grep ES_HEAP_SIZE /etc/sysconfig/elasticsearch"
+      changed_when: False
+      register: heap_size
+
+    - name: print hostname + role
+      debug:
+        msg: "Hostname: {{ansible_hostname}}, Role: {{role.stdout|replace('tags: ', '')}}, {{heap_size.stdout}}"

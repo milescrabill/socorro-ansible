@@ -1,0 +1,30 @@
+---
+- hosts: localhost
+  connection: local
+  tasks:
+    - name: create symbols_api_gw_role
+      iam:
+        profile: socorro
+        iam_type: role
+        name: SymbolsAPIGWRole
+        state: present
+        trust_policy:
+          Version: '2012-10-17'
+          Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: apigateway.amazonaws.com
+    - name: create symbols_api_gw_s3_access_policy
+      iam_policy:
+        profile: socorro
+        iam_type: role
+        iam_name: SymbolsAPIGWRole
+        policy_name: SymbolsAPIGWS3Policy
+        state: present
+        policy_json:
+          Version: '2012-10-17'
+          Statement:
+          - Action: s3:GetObject
+            Effect: Allow
+            Resource: arn:aws:s3:::org.mozilla.crash-stats.symbols-public/v1/*
