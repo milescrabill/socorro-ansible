@@ -5,7 +5,16 @@
   connection: ssh
   vars:
     new_datadog_api_key: null
+  vars_prompt:
+    - name: "shard_allocation_disabled"
+      prompt: "Have you disabled shard allocation? (yes to advance, be honest!)"
+      default: "no"
   tasks:
+    - name: conditional fail
+      fail:
+        msg: "Disable shard allocation!"
+      run_once: true
+      when: shard_allocation_disabled != "yes"
     - name: substitute old datadog API key for new key
       replace:
         dest: /etc/dd-agent/datadog.conf
