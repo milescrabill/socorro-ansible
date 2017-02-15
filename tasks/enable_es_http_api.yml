@@ -1,0 +1,16 @@
+- name: enable http api in /etc/elasticsearch/elasticsearch.yml
+  replace:
+    dest: /etc/elasticsearch/elasticsearch.yml
+    regexp: "http:\n    enabled: false"
+    replace: "http:\n    enabled: true"
+  become: true
+  become_user: root
+  register: enable_http_api
+- name: restart elasticsearch
+  service:
+    name: elasticsearch
+    state: restarted
+  become: true
+  become_user: root
+  when: >
+    enable_http_api.changed == true

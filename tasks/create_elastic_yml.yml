@@ -1,0 +1,7 @@
+- name: create /etc/dd-agent/conf.d/elastic.yaml if it does not exist
+  copy:
+    src: /etc/dd-agent/conf.d/elastic.yaml.example
+    dest: /etc/dd-agent/conf.d/elastic.yaml
+    remote_src: True
+  become: true
+  become_user: root

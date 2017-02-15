@@ -1,0 +1,7 @@
+- name: substitute old datadog API key for new key
+  replace:
+    dest: /etc/dd-agent/datadog.conf
+    regexp: "^api_key: [a-zA-Z0-9]*$"
+    replace: "api_key: {{new_datadog_api_key}}"
+  become: true
+  become_user: root

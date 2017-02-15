@@ -60,10 +60,7 @@
   connection: ssh
   tasks:
     # Get node role
-    - name: get elasticsearch role from datadog.conf
-      command: "grep 'es_[a-z]*_node' /etc/dd-agent/datadog.conf | sed 's/tags: //'"
-      changed_when: False
-      register: role
+    - include: ../tasks/get_es_role_from_datadog_conf.yml
 
     # Restart Elasticsearch node
     # This handler is the entrance point for the chained set of handers

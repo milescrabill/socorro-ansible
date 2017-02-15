@@ -4,10 +4,4 @@
   remote_user: centos
   connection: ssh
   tasks:
-    - name: disable shard allocation (needs to be run on a host w/ http api)
-    command: >
-      curl -s -XPUT localhost:9200/_cluster/settings -d '{"transient":{"cluster.routing.allocation.disable_allocation": "true"}}'
-    run_once: true
-    register: disabled_shard_allocation
-  - name: print curl output
-    debug: msg="{{disabled_shard_allocation.stdout}}"
+    - include: ../tasks/disable_shard_allocation.yml

@@ -5,64 +5,6 @@
   vars:
     new_datadog_api_key: null
   tasks:
-    - name: substitute old datadog API key for new key
-      replace:
-        dest: /etc/dd-agent/datadog.conf
-        regexp: "^api_key: [a-zA-Z0-9]*$"
-        replace: "api_key: {{new_datadog_api_key}}"
-      become: true
-      become_user: root
-    - name: create /etc/dd-agent/conf.d/elastic.yaml if it does not exist
-      copy:
-        src: /etc/dd-agent/conf.d/elastic.yaml.example
-        dest: /etc/dd-agent/conf.d/elastic.yaml
-        remote_src: True
-      become: true
-      become_user: root
-    - name: check if data node
-      command: 'grep "data: true$" /etc/elasticsearch/elasticsearch.yml'
-      ignore_errors: True
-      changed_when: False
-      register: is_data_node
-    - name: check if master node
-      command: 'grep "master: true$" /etc/elasticsearch/elasticsearch.yml'
-      ignore_errors: True
-      changed_when: False
-      register: is_master_node
-    - name: substitute datadog default tags for data node tag
-      replace:
-        dest: /etc/dd-agent/datadog.conf
-        regexp: "^#tags: mytag0, mytag1$"
-        replace: "tags: es_data_node"
-      become: true
-      become_user: root
-      when: is_data_node|succeeded and is_master_node|failed
-      register: changed_to_data
-    - name: substitute datadog default tags for master node tag
-      replace:
-        dest: /etc/dd-agent/datadog.conf
-        regexp: "^#tags: mytag0, mytag1$"
-        replace: "tags: es_master_node"
-      become: true
-      become_user: root
-      when: is_data_node|failed and is_master_node|succeeded
-      register: changed_to_master
-    - name: substitute datadog default tags for interface node tag
-      replace:
-        dest: /etc/dd-agent/datadog.conf
-        regexp: "^#tags: mytag0, mytag1$"
-        replace: "tags: es_interface_node"
-      become: true
-      become_user: root
-      when: is_data_node|failed and is_master_node|failed
-      register: changed_to_interface
-    - name: restart datadog
-      service:
-        name: datadog-agent
-        state: restarted
-      become: true
-      become_user: root
-      when: >
-        changed_to_data.changed == true or
-        changed_to_master.changed == true or
-        changed_to_interface.changed == true
+    - include: ../tasks/replace_datadog_api_key.yml
+    - include: ../tasks/create_elastic_yml.yml
+    - include: ../tasks/set_es_node_datadog_tags.yml
