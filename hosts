@@ -2,3 +2,6 @@
 # non-default system python interpreters
 # ref: http://docs.ansible.com/ansible/intro_inventory.html
 localhost ansible_python_interpreter="/usr/bin/env python"
+
+# note: most of these should be run on socorro hosts
+# use PublicDnsName:{{ssh_port}}
