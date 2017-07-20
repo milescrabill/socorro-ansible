@@ -5,7 +5,7 @@
   connection: ssh
   vars:
     new_datadog_api_key: null
-    es_heap_size: 14g # stage data node
+    es_heap_size: 20g # prod data node
   vars_prompt:
     - name: "shard_allocation_disabled"
       prompt: "Have you disabled shard allocation? (yes to advance, be honest!)"
