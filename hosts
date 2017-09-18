@@ -4,4 +4,4 @@
 localhost ansible_python_interpreter="/usr/bin/env python"
 
 # note: most of these should be run on socorro hosts
-# use PublicDnsName:{{ssh_port}}
+# use PublicDnsName:22123
