@@ -1,5 +1,7 @@
 # socorro-ansible
 
+Ansible, and more!
+
 ### Adding a new data node:
 
 - run playbooks/disable_shard_allocation.yml (on a single host w/ http api enabled)
